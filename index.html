@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#10122b">
+<title>Vyaruth: The Impossible USA Trip</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="./css/style.css">
+<script type="importmap">
+{
+  "imports": {
+    "three": "./vendor/three.module.js"
+  }
+}
+</script>
+</head>
+<body>
+
+<div id="game-root">
+  <canvas id="game-canvas"></canvas>
+
+  <!-- ============ HUD ============ -->
+  <div id="hud" class="hud hidden">
+    <div class="hud-top">
+      <div class="hud-left">
+        <div class="hud-chip"><span class="chip-label">DIST</span><span id="hud-distance">0</span><span class="chip-unit">m</span></div>
+        <div class="hud-chip"><span class="chip-label">SCORE</span><span id="hud-score">0</span></div>
+        <div class="hud-chip coin-chip"><span class="coin-dot"></span><span id="hud-coins">0</span></div>
+      </div>
+      <div class="hud-right">
+        <div id="hud-level" class="hud-level">LEVEL 1</div>
+        <button id="btn-pause" class="icon-btn" aria-label="Pause">II</button>
+      </div>
+    </div>
+
+    <div class="hud-mid">
+      <div id="powerup-bar" class="powerup-bar"></div>
+      <div id="pass-progress" class="pass-progress hidden">
+        <span class="pass-icon">✈</span>
+        <span id="pass-text">BOARDING PASSES 0/3</span>
+        <div class="pass-track"><div id="pass-fill" class="pass-fill"></div></div>
+      </div>
+    </div>
+
+    <div id="toast" class="toast hidden"></div>
+    <div id="combo" class="combo hidden"></div>
+  </div>
+
+  <!-- ============ MOBILE CONTROLS ============ -->
+  <div id="mobile-controls" class="mobile-controls hidden">
+    <div class="mobile-left">
+      <button class="touch-btn" data-action="left">◀</button>
+      <button class="touch-btn" data-action="right">▶</button>
+    </div>
+    <div class="mobile-right">
+      <button class="touch-btn" data-action="slide">▼</button>
+      <button class="touch-btn touch-jump" data-action="jump">▲<small>JUMP</small></button>
+    </div>
+  </div>
+
+  <!-- ============ PRIVATE ACCESS GATE ============ -->
+  <section id="screen-lock" class="screen lock-screen">
+    <div class="lock-panel">
+      <div class="lock-badge">PRIVATE COPY</div>
+      <h3>VYARUTH'S SECRET FILE</h3>
+      <p>Only the chosen traveller may continue.</p>
+      <label for="lock-input">PASSWORD</label>
+      <input id="lock-input" type="password" autocomplete="off" spellcheck="false" placeholder="type it...">
+      <div id="lock-error" class="lock-error hidden">WRONG PASSWORD. Vizag is disappointed.</div>
+      <button id="lock-unlock" class="btn btn-primary btn-big">UNLOCK ▶</button>
+      <small>Hint: two names, one very patient girlfriend.</small>
+    </div>
+  </section>
+
+  <!-- ============ 2D OPENING CUTSCENE ============ -->
+  <section id="screen-story" class="screen story-screen">
+    <div class="story-shell">
+      <div class="story-top">
+        <span class="story-tag">A COMPLETELY TRUE STORY</span>
+        <button id="story-skip" class="story-skip">SKIP ▶</button>
+      </div>
+
+      <div id="story-stage" class="story-stage">
+        <div class="story-sun"></div>
+        <div class="story-hills"></div>
+        <div class="story-floor"></div>
+
+        <!-- Scene 1: the text -->
+        <div class="story-scene active" data-scene="0">
+          <div class="phone">
+            <div class="phone-screen">
+              <div class="chat-head">VIZAG ❤️</div>
+              <div class="chat-line in">hey... gate 3?</div>
+              <div class="chat-line in">i brought chai + proof</div>
+              <div class="chat-line out">coming! don't move!</div>
+              <div class="chat-typing">•••</div>
+            </div>
+          </div>
+          <div class="story-person hero story-hero-phone" style="--skin:#e0a878;--hair:#231811;--shirt:#ff9f1c;--pants:#2a5bd7;--bag:#1f7a8c">
+            <div class="sp-hair"></div>
+            <div class="sp-head"><i class="sp-eye l"></i><i class="sp-eye r"></i><i class="sp-mouth"></i></div>
+            <div class="sp-body"><div class="sp-bag"></div></div>
+            <div class="sp-arm l"></div><div class="sp-arm r"></div>
+            <div class="sp-leg l"></div><div class="sp-leg r"></div>
+          </div>
+          <div class="story-bubble hero-bubble phone-bubble">SHE TEXTED ME.<br>SHE'S REAL!</div>
+        </div>
+
+        <!-- Scene 2: the doubters -->
+        <div class="story-scene" data-scene="1">
+          <div class="story-person friend story-friend-a" style="--skin:#f0c39a;--hair:#3a2a1a;--shirt:#7a5fc0;--pants:#333333;--bag:transparent">
+            <div class="sp-hair"></div>
+            <div class="sp-head"><i class="sp-eye l"></i><i class="sp-eye r"></i><i class="sp-mouth flat"></i></div>
+            <div class="sp-body"></div>
+            <div class="sp-arm l"></div><div class="sp-arm r"></div>
+            <div class="sp-leg l"></div><div class="sp-leg r"></div>
+          </div>
+          <div class="story-person friend story-friend-b" style="--skin:#c98f63;--hair:#111111;--shirt:#4a8fc0;--pants:#222222;--bag:transparent">
+            <div class="sp-hair"></div>
+            <div class="sp-head"><i class="sp-eye l"></i><i class="sp-eye r"></i><i class="sp-mouth flat"></i></div>
+            <div class="sp-body"></div>
+            <div class="sp-arm l"></div><div class="sp-arm r"></div>
+            <div class="sp-leg l"></div><div class="sp-leg r"></div>
+          </div>
+          <div class="story-person hero story-hero-doubt" style="--skin:#e0a878;--hair:#231811;--shirt:#ff9f1c;--pants:#2a5bd7;--bag:#1f7a8c">
+            <div class="sp-hair"></div>
+            <div class="sp-head"><i class="sp-eye l wide"></i><i class="sp-eye r wide"></i><i class="sp-mouth open"></i></div>
+            <div class="sp-body"><div class="sp-bag"></div></div>
+            <div class="sp-arm l"></div><div class="sp-arm r"></div>
+            <div class="sp-leg l"></div><div class="sp-leg r"></div>
+          </div>
+          <div class="story-bubble friend-bubble fb-a">BRO... THAT'S A CITY.</div>
+          <div class="story-bubble friend-bubble fb-b">SHE'S STILL LOADING ⏳</div>
+        </div>
+
+        <!-- Scene 3: the plan -->
+        <div class="story-scene" data-scene="2">
+          <div class="story-plane">✈</div>
+          <div class="story-person hero story-hero-plan" style="--skin:#e0a878;--hair:#231811;--shirt:#ff9f1c;--pants:#2a5bd7;--bag:#1f7a8c">
+            <div class="sp-hair"></div>
+            <div class="sp-head"><i class="sp-eye l"></i><i class="sp-eye r"></i><i class="sp-mouth grin"></i></div>
+            <div class="sp-body"><div class="sp-bag"></div></div>
+            <div class="sp-arm l raised"></div><div class="sp-arm r raised"></div>
+            <div class="sp-leg l"></div><div class="sp-leg r"></div>
+          </div>
+          <div class="story-bubble hero-bubble plan-bubble">I'LL FLY TO AMERICA<br>AND BRING PROOF!</div>
+          <div class="story-stamp">APPROVED!</div>
+        </div>
+
+        <!-- Scene 4: title card -->
+        <div class="story-scene" data-scene="3">
+          <div class="story-title-card">
+            <div class="story-title-tag">A COMPLETELY TRUE STORY</div>
+            <div class="story-title-main">VYARUTH</div>
+            <div class="story-title-sub">THE IMPOSSIBLE USA TRIP</div>
+            <div class="story-title-joke">Vizag is real. Trust me. — Vyaruth</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="story-bottom">
+        <div id="story-caption" class="story-caption">A message from Vizag...</div>
+        <div id="story-dots" class="story-dots"><i class="active"></i><i></i><i></i><i></i></div>
+        <button id="story-next" class="btn btn-primary hidden">START ▶</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ MAIN MENU ============ -->
+  <section id="screen-menu" class="screen active">
+    <div class="menu-wrap">
+      <div class="game-logo">
+        <div class="logo-tag">A COMPLETELY TRUE STORY</div>
+        <h1>VYARUTH</h1>
+        <h2>THE IMPOSSIBLE USA TRIP</h2>
+        <div class="logo-sub">Vizag is real. Trust me. — Vyaruth</div>
+      </div>
+      <div class="menu-buttons">
+        <button class="btn btn-primary" data-nav="play">▶ PLAY</button>
+        <button class="btn" data-nav="levels">▦ STORY MODE</button>
+        <button class="btn" data-nav="endless">∞ ENDLESS MODE <span id="endless-lock" class="lock">🔒</span></button>
+        <div class="menu-row">
+          <button class="btn btn-small" data-nav="story">▣ STORY INTRO</button>
+          <button class="btn btn-small" data-nav="characters">☺ CHARACTERS</button>
+          <button class="btn btn-small" data-nav="shop">$ SHOP</button>
+        </div>
+        <button class="btn btn-small" data-nav="settings">⚙ SETTINGS</button>
+      </div>
+      <div class="menu-footer">
+        <div>HIGH SCORE <b id="menu-highscore">0</b></div>
+        <div>TOTAL COINS <b id="menu-coins">0</b></div>
+        <div class="hint">SWIPE or use ARROWS / WASD · SPACE to jump · DOWN to slide</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ LEVEL SELECT ============ -->
+  <section id="screen-levels" class="screen">
+    <div class="panel wide">
+      <header class="panel-head"><h3>STORY MODE</h3><button class="back-btn" data-nav="menu">✕</button></header>
+      <p class="panel-intro">Six levels. One questionable girlfriend. Zero proof.</p>
+      <div id="level-list" class="level-list"></div>
+    </div>
+  </section>
+
+  <!-- ============ CHARACTERS ============ -->
+  <section id="screen-characters" class="screen">
+    <div class="panel wide">
+      <header class="panel-head"><h3>CHARACTERS &amp; OUTFITS</h3><button class="back-btn" data-nav="menu">✕</button></header>
+      <p class="panel-intro">Dress Vyaruth for the journey. Looking confident is 90% of the evidence.</p>
+      <div id="character-list" class="card-grid"></div>
+    </div>
+  </section>
+
+  <!-- ============ SHOP ============ -->
+  <section id="screen-shop" class="screen">
+    <div class="panel wide">
+      <header class="panel-head"><h3>SHOP</h3><button class="back-btn" data-nav="menu">✕</button></header>
+      <p class="panel-intro">Your wallet: <b class="coin-color"><span id="shop-coins">0</span> coins</b>. No refunds. Vizag does not accept returns.</p>
+      <div id="shop-list" class="card-grid"></div>
+    </div>
+  </section>
+
+  <!-- ============ SETTINGS ============ -->
+  <section id="screen-settings" class="screen">
+    <div class="panel">
+      <header class="panel-head"><h3>SETTINGS</h3><button class="back-btn" data-nav="menu">✕</button></header>
+      <div class="settings-list">
+        <label class="setting-row"><span>MUSIC</span><input type="checkbox" id="set-music" checked><span class="switch"></span></label>
+        <label class="setting-row"><span>SOUND FX</span><input type="checkbox" id="set-sfx" checked><span class="switch"></span></label>
+        <label class="setting-row"><span>RETRO PIXEL 3D (OFF = HD)</span><input type="checkbox" id="set-pixel"><span class="switch"></span></label>
+        <label class="setting-row"><span>SCREEN SHAKE</span><input type="checkbox" id="set-shake" checked><span class="switch"></span></label>
+        <label class="setting-row"><span>FLIGHT MODE (no audio)</span><input type="checkbox" id="set-mute" unchecked><span class="switch"></span></label>
+        <button id="btn-reset" class="btn btn-danger">RESET ALL PROGRESS</button>
+        <button class="btn" data-nav="menu">BACK TO MENU</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ LEVEL INTRO ============ -->
+  <section id="screen-intro" class="screen">
+    <div class="panel intro-panel">
+      <div id="intro-tag" class="intro-tag">LEVEL 1</div>
+      <h3 id="intro-title">THE INDIAN AIRPORT</h3>
+      <p id="intro-story" class="intro-story"></p>
+      <div class="intro-quote" id="intro-quote"></div>
+      <button id="btn-start-run" class="btn btn-primary btn-big">RUN! ▶</button>
+      <button class="btn btn-text" data-nav="menu">CANCEL</button>
+    </div>
+  </section>
+
+  <!-- ============ PAUSE ============ -->
+  <section id="screen-pause" class="screen">
+    <div class="panel">
+      <header class="panel-head"><h3>PAUSED</h3></header>
+      <p class="panel-intro">Vizag is still loading...</p>
+      <div class="stack">
+        <button id="btn-resume" class="btn btn-primary">RESUME</button>
+        <button id="btn-restart" class="btn">RESTART LEVEL</button>
+        <button id="btn-pause-settings" class="btn btn-small">SETTINGS</button>
+        <button id="btn-quit" class="btn btn-small">MAIN MENU</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ GAME OVER ============ -->
+  <section id="screen-gameover" class="screen">
+    <div class="panel">
+      <header class="panel-head"><h3 id="go-title">RUN OVER</h3></header>
+      <p id="go-message" class="panel-intro">Vyaruth tripped over thin air. Again.</p>
+      <div class="stats-grid">
+        <div><span>SCORE</span><b id="go-score">0</b></div>
+        <div><span>DISTANCE</span><b id="go-distance">0m</b></div>
+        <div><span>COINS</span><b id="go-coins">0</b></div>
+        <div><span>BEST</span><b id="go-best">0</b></div>
+      </div>
+      <div class="stack">
+        <button id="btn-again" class="btn btn-primary">TRY AGAIN</button>
+        <button id="btn-next-level" class="btn hidden">NEXT LEVEL ▶</button>
+        <button id="btn-go-menu" class="btn btn-small">MAIN MENU</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ STORY ENDING ============ -->
+  <section id="screen-ending" class="screen">
+    <div class="panel wide ending-panel">
+      <div id="ending-badge" class="ending-badge">ENDING 1 / 4</div>
+      <h3 id="ending-title">THE TRUTH</h3>
+      <p id="ending-text" class="ending-text"></p>
+      <div class="stats-grid">
+        <div><span>FINAL SCORE</span><b id="end-score">0</b></div>
+        <div><span>COINS</span><b id="end-coins">0</b></div>
+        <div><span>PASSES</span><b id="end-passes">0</b></div>
+      </div>
+      <div class="stack">
+        <button id="btn-end-continue" class="btn btn-primary">CONTINUE</button>
+        <button id="btn-end-menu" class="btn btn-small">MAIN MENU</button>
+      </div>
+    </div>
+  </section>
+
+  <div id="fatal-error" class="fatal hidden"></div>
+</div>
+
+<script type="module" src="./js/main.js"></script>
+</body>
+</html>
